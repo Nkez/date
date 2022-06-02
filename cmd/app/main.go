@@ -21,7 +21,6 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		logrus.Fatalf("error loading env variables: %s", err.Error())
 	}
-	logrus.Info("1")
 	db, err := postgres.NewPostgresDB(postgres.Config{
 		Host:     viper.GetString("db.host"),
 		Port:     viper.GetString("db.port"),
@@ -33,11 +32,9 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("failed to initialize db : %s", err.Error())
 	}
-	logrus.Info("2")
 	geo := geolite.NewGeoDB(geolite.Config{
 		DB: viper.GetString("geo.path"),
 	})
-	logrus.Info("3")
 	repos := repositories.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services, geo)
