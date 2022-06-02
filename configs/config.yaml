@@ -1,0 +1,11 @@
+port: "8000"
+
+db:
+  username: "postgres"
+  host: "localhost"
+  port: "5432"
+  dbname: "time"
+  sslmode: "disable"
+
+geo:
+  path : "internal/interfaces/geolite/GeoLite2-City.mmdb"
