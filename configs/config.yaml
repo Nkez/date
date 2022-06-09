@@ -1,4 +1,6 @@
-port: "8000"
+port: ":8000"
+
+grpc: ":8081"
 
 db:
   username: "postgres"

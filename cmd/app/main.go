@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	date_protobuf "github.com/Nkez/date-protobuf"
 	"github.com/Nkez/date/internal/handler"
 	"github.com/Nkez/date/internal/interfaces/geolite"
@@ -9,12 +8,13 @@ import (
 	"github.com/Nkez/date/internal/interfaces/postgres"
 	"github.com/Nkez/date/internal/repositories"
 	"github.com/Nkez/date/internal/service"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/joho/godotenv"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/valyala/fasthttp"
-	"net/http"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"net"
 	"os"
 )
 
@@ -43,13 +43,18 @@ func main() {
 	repos := repositories.NewRepository(db)
 	services := service.NewService(repos)
 	handlers := handler.NewHandler(services, geo)
-	grpc := grpc2.NewEventApiStruct(repos)
+	g := grpc2.NewEventApiStruct(repos)
 	go func() {
-		mux := runtime.NewServeMux()
-		date_protobuf.RegisterEventServiceHandlerServer(context.Background(), mux, grpc)
-		logrus.Fatal(http.ListenAndServe(":50080", mux))
+		lis, err := net.Listen("tcp", viper.GetString("grpc"))
+		if err != nil {
+			logrus.Fatal("err grpc server")
+		}
+		serv := grpc.NewServer()
+		date_protobuf.RegisterEventServiceServer(serv, g)
+		reflection.Register(serv)
+		serv.Serve(lis)
 	}()
-	if err := fasthttp.ListenAndServe(":8000", handlers.InitRouter().HandleRequest); err != nil {
+	if err := fasthttp.ListenAndServe(viper.GetString("port"), handlers.InitRouter().HandleRequest); err != nil {
 		logrus.Fatalf("error occured while running http server: %s", err.Error())
 	}
 }
