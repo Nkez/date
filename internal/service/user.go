@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	requestTypeTime  = "get time"
-	requestTypeDate  = "get date"
+	requestTypeTime  = "GET_TIME"
+	requestTypeDate  = "GET_DATE"
 	deviceTypeMobile = "mobile phone"
 	deviceTypePc     = "PC"
 )

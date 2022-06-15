@@ -2,12 +2,7 @@ port: ":8000"
 
 grpc: ":8081"
 
-db:
-  username: "postgres"
-  host: "localhost"
-  port: "5432"
-  dbname: "time"
-  sslmode: "disable"
+db: "postgres://postgres:123456@localhost:5432/time?sslmode=disable"
 
 geo:
   path : "internal/interfaces/geolite/GeoLite2-City.mmdb"

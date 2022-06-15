@@ -1,23 +1,20 @@
 package postgres
 
 import (
-	"fmt"
+	"embed"
+	"errors"
+	"github.com/Nkez/date/internal/model"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )
 
-type Config struct {
-	Host     string
-	Port     string
-	Username string
-	Password string
-	DBName   string
-	SSLMode  string
-}
+//go:embed migrations/*.sql
+var MigrationsFS embed.FS
 
-func NewPostgresDB(cfg Config) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
+func NewPostgresDB(cfg *model.Config) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("postgres", cfg.DBUrl)
 	if err != nil {
 		return nil, err
 	}
@@ -27,4 +24,41 @@ func NewPostgresDB(cfg Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func Up(cfg *model.Config) error {
+	source, err := iofs.New(MigrationsFS, "migrations")
+	if err != nil {
+		return err
+	}
+	instance, err := migrate.NewWithSourceInstance("iofs", source, cfg.DBUrl)
+	if err != nil {
+		return err
+	}
+	if err := instance.Up(); err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			return nil
+		}
+		return err
+	}
+	return nil
+}
+
+func Down(cfg *model.Config) error {
+	source, err := iofs.New(MigrationsFS, "migrations")
+	if err != nil {
+		return err
+	}
+	instance, err := migrate.NewWithSourceInstance("iofs", source, cfg.DBUrl)
+	if err != nil {
+		return err
+	}
+	if err := instance.Down(); err != nil {
+		if errors.Is(err, migrate.ErrNoChange) {
+			return nil
+		}
+		return err
+	}
+	return nil
+	return nil
 }
