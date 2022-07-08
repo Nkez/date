@@ -16,6 +16,7 @@ const (
 	requestTypeDate  = "GET_DATE"
 	deviceTypeMobile = "mobile phone"
 	deviceTypePc     = "PC"
+	timeFormat       = "15:04:05"
 )
 
 type UserService struct {
@@ -93,27 +94,27 @@ func TimeResponse() (*model.TimeInfo, error) {
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error %s", cities.Warsaw))
 	}
-	cities.Warsaw = time.Now().In(loc).Format("15.04.05")
+	cities.Warsaw = time.Now().In(loc).Format(timeFormat)
 	loc, err = time.LoadLocation(cities.Minsk)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error %s", cities.Minsk))
 	}
-	cities.Minsk = time.Now().In(loc).Format("15.04.05")
+	cities.Minsk = time.Now().In(loc).Format(timeFormat)
 	loc, err = time.LoadLocation(cities.NewYork)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error %s", cities.NewYork))
 	}
-	cities.NewYork = time.Now().In(loc).Format("15.04.05")
+	cities.NewYork = time.Now().In(loc).Format(timeFormat)
 	loc, err = time.LoadLocation(cities.Tbilisi)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error %s", cities.Tbilisi))
 	}
-	cities.Tbilisi = time.Now().In(loc).Format("15.04.05")
+	cities.Tbilisi = time.Now().In(loc).Format(timeFormat)
 	loc, err = time.LoadLocation(cities.Vilnius)
 	if err != nil {
 		return nil, errors.New(fmt.Sprintf("error %s", cities.Vilnius))
 	}
-	cities.Vilnius = time.Now().In(loc).Format("15.04.05")
+	cities.Vilnius = time.Now().In(loc).Format(timeFormat)
 	return cities, nil
 }
 
